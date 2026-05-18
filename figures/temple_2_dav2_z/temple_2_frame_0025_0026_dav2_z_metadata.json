@@ -1,0 +1,38 @@
+{
+    "scene":  "temple_2",
+    "pair":  "frame_0025-frame_0026",
+    "weights_path":  "checkpoints/depth_anything_v2_vits_frozen.pth",
+    "device":  "cuda",
+    "frames":  [
+                   {
+                       "frame":  "frame_0025",
+                       "image_path":  "SINTEL_ROOT/training/clean/temple_2/frame_0025.png",
+                       "original":  "figures/temple_2_dav2_z/temple_2_frame_0025_original.png",
+                       "depth_png":  "figures/temple_2_dav2_z/temple_2_frame_0025_dav2_z_magma.png",
+                       "depth_shape":  [
+                                           436,
+                                           1024
+                                       ],
+                       "depth_min":  0.0,
+                       "depth_max":  7.22265625,
+                       "depth_p02":  0.0,
+                       "depth_p98":  6.55859375
+                   },
+                   {
+                       "frame":  "frame_0026",
+                       "image_path":  "SINTEL_ROOT/training/clean/temple_2/frame_0026.png",
+                       "original":  "figures/temple_2_dav2_z/temple_2_frame_0026_original.png",
+                       "depth_png":  "figures/temple_2_dav2_z/temple_2_frame_0026_dav2_z_magma.png",
+                       "depth_shape":  [
+                                           436,
+                                           1024
+                                       ],
+                       "depth_min":  0.0,
+                       "depth_max":  7.16015625,
+                       "depth_p02":  0.0,
+                       "depth_p98":  6.7578125
+                   }
+               ],
+    "pair_grid":  "figures/temple_2_dav2_z/temple_2_frame_0025_0026_original_plus_dav2_z.png"
+}
+

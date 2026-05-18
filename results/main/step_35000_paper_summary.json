@@ -1,0 +1,77 @@
+{
+    "checkpoint":  "checkpoints/depth_raft_g_z_dab_step35000_best.pth",
+    "method":  "Sun-RAFT + G + Z + DAB",
+    "sintel_train_main_eval":  {
+                                   "baseline":  {
+                                                    "clean_epe":  1.694220781326294,
+                                                    "final_epe":  2.5935211181640625
+                                                },
+                                   "ours_step35000":  {
+                                                          "clean_epe":  1.4970190525054932,
+                                                          "final_epe":  2.469294309616089
+                                                      },
+                                   "delta":  {
+                                                 "clean_epe":  -0.19720172882080078,
+                                                 "final_epe":  -0.12422680854797363
+                                             },
+                                   "relative_improvement_pct":  {
+                                                                    "clean_epe":  -11.639669976395707,
+                                                                    "final_epe":  -4.789892159763106
+                                                                }
+                               },
+    "sintel_train_official_regions":  {
+                                          "note":  "Official matched/unmatched split was computed by the occ/noc evaluation script. The all EPE in that file uses the official-region recomputation path; use sintel_train_main_eval for the headline clean/final numbers.",
+                                          "baseline":  {
+                                                           "clean":  {
+                                                                         "matched_noc_epe":  0.8182227544178525,
+                                                                         "unmatched_occ_epe":  12.735783739859823
+                                                                     },
+                                                           "final":  {
+                                                                         "matched_noc_epe":  1.564742858850293,
+                                                                         "unmatched_occ_epe":  15.6279306288983
+                                                                     }
+                                                       },
+                                          "ours_step35000":  {
+                                                                 "clean":  {
+                                                                               "matched_noc_epe":  0.7100486018053899,
+                                                                               "unmatched_occ_epe":  11.541578423457752
+                                                                           },
+                                                                 "final":  {
+                                                                               "matched_noc_epe":  1.4845093848989142,
+                                                                               "unmatched_occ_epe":  14.840870857462674
+                                                                           }
+                                                             },
+                                          "delta":  {
+                                                        "clean_matched_noc_epe":  -0.10817415261246266,
+                                                        "clean_unmatched_occ_epe":  -1.194205316402071,
+                                                        "final_matched_noc_epe":  -0.08023347395137881,
+                                                        "final_unmatched_occ_epe":  -0.7870597714356258
+                                                    }
+                                      },
+    "kitti_2015_cross_domain":  {
+                                    "note":  "Sun-RAFT Table 2 EPE matches pair_mean_epe (e.g. Sun-RAFT_sintel-test -\u003e KITTI train: 4.7653), not pixel-weighted EPE (5.1097). FL remains the pixel-weighted official outlier rate.",
+                                    "baseline":  {
+                                                     "epe_all":  4.765334411635995,
+                                                     "epe_noc":  2.8170551094412803,
+                                                     "f1_all":  12.635754097275797,
+                                                     "f1_noc":  8.62090688078347,
+                                                     "pixel_weighted_epe_all":  5.1097411103323775,
+                                                     "pixel_weighted_epe_noc":  2.9276507691476947
+                                                 },
+                                    "ours_step35000":  {
+                                                           "epe_all":  3.985359044596553,
+                                                           "epe_noc":  2.2007162822037936,
+                                                           "f1_all":  11.672011570417764,
+                                                           "f1_noc":  7.80673116381578,
+                                                           "pixel_weighted_epe_all":  4.265457252570216,
+                                                           "pixel_weighted_epe_noc":  2.2218458138979256
+                                                       },
+                                    "delta_pct":  {
+                                                      "epe_all":  "-16.37%",
+                                                      "epe_noc":  "-21.88%",
+                                                      "f1_all":  "-0.96 abs%",
+                                                      "f1_noc":  "-0.81 abs%"
+                                                  }
+                                }
+}
+

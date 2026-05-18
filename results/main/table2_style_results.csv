@@ -1,0 +1,11 @@
+sort_order,trained_on,method,training_protocol,chairs_val,sintel_clean,sintel_final,kitti_epe,kitti_fl,chairs_val_from_pre_sintel,notes
+1,Chairs,+ G only,Chairs 10K pretrain checkpoint,2.2413306236,,,,,false,pure Chairs-pretrain checkpoint
+2,Chairs,+ Z only,Chairs 10K pretrain checkpoint,2.1702046394,,,,,false,pure Chairs-pretrain checkpoint
+3,Chairs,+ G + Z selected init,Chairs 105K pretrain checkpoint,2.0679464340,,,,,false,selected Chairs initialization for later Sintel runs
+4,Sintel,Sun-RAFT baseline (reproduced),Official Sintel test checkpoint,2.3243227005,1.6942207813,2.5935211182,4.7653344116,12.6357540973,false,released Sintel checkpoint; KITTI is direct cross-domain evaluation
+5,Sintel,+ G only,Chairs 10K -> Sintel 5K,2.2413306236,1.6268252134,2.5597412586,,,true,short directional ablation
+6,Sintel,+ Z only,Chairs 10K -> Sintel 5K,2.1702046394,1.5833413601,2.5848584175,,,true,short directional ablation
+7,Sintel,"+ G + Z, DAB off",Chairs 105K -> Sintel 17.5K,2.0679464340,1.5272715472,2.5036269901,,,true,best clean step 17500
+8,Sintel,+ G + Z + DAB (Ours),Chairs 105K -> Sintel 35K,2.0679464340,1.4970190525,2.4692943096,3.9853590446,11.6720115704,true,main paper checkpoint step 35000
+9,KITTI,Sun-RAFT baseline (official KITTI ckpt),"Official KITTI checkpoint; A0, 12 iters",,,,2.1755962346,7.6614344514,false,included for grouped Table-2 layout parity
+

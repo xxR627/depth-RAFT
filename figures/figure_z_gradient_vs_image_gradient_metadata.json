@@ -1,0 +1,28 @@
+{
+    "scenes":  [
+                   {
+                       "scene":  "market_5",
+                       "frame_idx":  30,
+                       "image":  "SINTEL_ROOT/training/clean/market_5/frame_0030.png",
+                       "flow":  "SINTEL_ROOT/training/flow/market_5/frame_0030.flo"
+                   },
+                   {
+                       "scene":  "temple_2",
+                       "frame_idx":  25,
+                       "image":  "SINTEL_ROOT/training/clean/temple_2/frame_0025.png",
+                       "flow":  "SINTEL_ROOT/training/flow/temple_2/frame_0025.flo"
+                   },
+                   {
+                       "scene":  "ambush_2",
+                       "frame_idx":  12,
+                       "image":  "SINTEL_ROOT/training/clean/ambush_2/frame_0012.png",
+                       "flow":  "SINTEL_ROOT/training/flow/ambush_2/frame_0012.flo"
+                   }
+               ],
+    "definition":  {
+                       "image_gradient":  "Sobel magnitude on grayscale Sintel clean frame.",
+                       "gt_flow_gradient":  "Sobel magnitude over GT flow channels, used as a motion-boundary proxy.",
+                       "z_gradient":  "Sobel magnitude on frozen DAv2 Z."
+                   }
+}
+

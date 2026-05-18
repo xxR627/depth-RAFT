@@ -1,0 +1,18 @@
+\begin{table}[t]
+\centering
+\caption{KITTI 2015 train-set cross-domain context. We compare under the Sintel-trained setting; KITTI-finetuned/in-domain numbers are listed only as non-comparable context.}
+\label{tab:kitti_context}
+\begin{tabular}{llccc}
+\toprule
+Method & Training setting & EPE & FL & Comparable \\
+\midrule
+UFlow & Sintel test & 7.67 & 17.41 & yes \\
+SMURF-EAS (MF) & Sintel test & 4.47 & 12.55 & setting only \\
+Sun-RAFT & Sintel test & 4.76 & 12.63 & yes \\
+Muun-RAFT & Sintel test & 4.39 & 12.35 & yes \\
+Ours & Sintel test & \textbf{3.99} & \textbf{11.67} & yes \\
+Sun-RAFT & KITTI in-domain & 2.17 & 7.66 & no \\
+\bottomrule
+\end{tabular}
+\end{table}
+

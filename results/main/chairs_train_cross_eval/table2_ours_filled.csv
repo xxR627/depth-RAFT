@@ -1,0 +1,3 @@
+Method,Trained on,Chairs Val,Sintel Clean,Sintel Final,KITTI EPE,KITTI FL,Note
+Ours,Chairs train,2.07,1.7206,2.7542,4.6895,13.4810,Chairs105K checkpoint evaluated cross-domain without Sintel/KITTI finetuning
+Ours,Sintel test,2.0708,1.4970,2.4693,3.9854,11.6720,Chairs Val re-evaluated after Sintel finetuning; essentially unchanged from Chairs105K start

@@ -1,0 +1,111 @@
+{
+    "selection_source":  "figures/figure3_selection_metadata_v4.json",
+    "selected":  [
+                     {
+                         "scene_name":  "market_5",
+                         "scene_category":  "market",
+                         "frame_idx":  30,
+                         "pair":  "frame_0030-frame_0031",
+                         "baseline_epe":  9.086639404296875,
+                         "ours_epe":  5.259814739227295,
+                         "baseline_unmatched_epe":  72.63189697265625,
+                         "ours_unmatched_epe":  42.42723846435547,
+                         "delta_unmatched":  30.20465850830078,
+                         "relative_unmatched_improvement":  0.415859419445866,
+                         "unmatched_pixels":  44101
+                     },
+                     {
+                         "scene_name":  "temple_2",
+                         "scene_category":  "temple",
+                         "frame_idx":  25,
+                         "pair":  "frame_0025-frame_0026",
+                         "baseline_epe":  14.922868728637695,
+                         "ours_epe":  9.281051635742188,
+                         "baseline_unmatched_epe":  42.53663635253906,
+                         "ours_unmatched_epe":  24.14922523498535,
+                         "delta_unmatched":  18.38741111755371,
+                         "relative_unmatched_improvement":  0.43227233496228584,
+                         "unmatched_pixels":  76284
+                     },
+                     {
+                         "scene_name":  "ambush_2",
+                         "scene_category":  "ambush",
+                         "frame_idx":  12,
+                         "pair":  "frame_0012-frame_0013",
+                         "baseline_epe":  2.5704662799835205,
+                         "ours_epe":  1.047774314880371,
+                         "baseline_unmatched_epe":  15.609516143798828,
+                         "ours_unmatched_epe":  4.611598968505859,
+                         "delta_unmatched":  10.997917175292969,
+                         "relative_unmatched_improvement":  0.7045648996405374,
+                         "unmatched_pixels":  47250
+                     },
+                     {
+                         "scene_name":  "cave_2",
+                         "scene_category":  "cave",
+                         "frame_idx":  22,
+                         "pair":  "frame_0022-frame_0023",
+                         "baseline_epe":  10.907134056091309,
+                         "ours_epe":  5.355050563812256,
+                         "baseline_unmatched_epe":  21.09986686706543,
+                         "ours_unmatched_epe":  13.45396614074707,
+                         "delta_unmatched":  7.645900726318359,
+                         "relative_unmatched_improvement":  0.36236724973145534,
+                         "unmatched_pixels":  105119
+                     }
+                 ],
+    "figure_metrics":  {
+                           "market_5/frame_0030":  {
+                                                       "frame_pair":  "frame_0030-frame_0031",
+                                                       "baseline_epe":  9.131516456604004,
+                                                       "smurf_epe":  9.79090404510498,
+                                                       "ours_epe":  4.580392360687256,
+                                                       "baseline_unmatched_epe":  72.81623077392578,
+                                                       "smurf_unmatched_epe":  77.68009948730469,
+                                                       "ours_unmatched_epe":  37.119205474853516,
+                                                       "delta_unmatched":  30.20465850830078,
+                                                       "relative_unmatched_improvement":  0.415859419445866
+                                                   },
+                           "temple_2/frame_0025":  {
+                                                       "frame_pair":  "frame_0025-frame_0026",
+                                                       "baseline_epe":  15.278573036193848,
+                                                       "smurf_epe":  16.251148223876953,
+                                                       "ours_epe":  9.149115562438965,
+                                                       "baseline_unmatched_epe":  42.61725616455078,
+                                                       "smurf_unmatched_epe":  42.48497009277344,
+                                                       "ours_unmatched_epe":  23.916248321533203,
+                                                       "delta_unmatched":  18.38741111755371,
+                                                       "relative_unmatched_improvement":  0.43227233496228584
+                                                   },
+                           "ambush_2/frame_0012":  {
+                                                       "frame_pair":  "frame_0012-frame_0013",
+                                                       "baseline_epe":  2.5704307556152344,
+                                                       "smurf_epe":  2.849547863006592,
+                                                       "ours_epe":  1.0479252338409424,
+                                                       "baseline_unmatched_epe":  15.63318157196045,
+                                                       "smurf_unmatched_epe":  16.29336166381836,
+                                                       "ours_unmatched_epe":  4.660542011260986,
+                                                       "delta_unmatched":  10.997917175292969,
+                                                       "relative_unmatched_improvement":  0.7045648996405374
+                                                   },
+                           "cave_2/frame_0022":  {
+                                                     "frame_pair":  "frame_0022-frame_0023",
+                                                     "baseline_epe":  10.907818794250488,
+                                                     "smurf_epe":  13.252452850341797,
+                                                     "ours_epe":  5.36137580871582,
+                                                     "baseline_unmatched_epe":  21.184036254882812,
+                                                     "smurf_unmatched_epe":  26.57988166809082,
+                                                     "ours_unmatched_epe":  13.562596321105957,
+                                                     "delta_unmatched":  7.645900726318359,
+                                                     "relative_unmatched_improvement":  0.36236724973145534
+                                                 }
+                       },
+    "baseline_checkpoint":  "checkpoints/sun_raft_sintel_baseline.pth",
+    "ours_checkpoint":  "checkpoints/depth_raft_g_z_dab_step35000_best.pth",
+    "smurf_checkpoint":  "external_smurf_sintel_checkpoint",
+    "outputs":  {
+                    "pdf":  "figures/figure3_sintel_qualitative_v4.pdf",
+                    "png":  "figures/figure3_sintel_qualitative_v4.png"
+                }
+}
+

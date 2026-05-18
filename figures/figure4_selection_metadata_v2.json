@@ -1,0 +1,64 @@
+{
+    "selection_source":  "figures/figure4_selection_metadata_v2.json",
+    "protocol_note":  "SMURF uses a Sintel-finetuned checkpoint and is evaluated zero-shot on KITTI to match the Sintel-trained Sun-RAFT / Ours protocol.",
+    "selected":  [
+                     {
+                         "frame_id":  "000094",
+                         "baseline_epe":  14.986818313598633,
+                         "ours_epe":  8.619400024414062,
+                         "delta_epe":  6.36741828918457,
+                         "relative_improvement":  0.4248679176558074,
+                         "valid_pixels":  114926
+                     },
+                     {
+                         "frame_id":  "000148",
+                         "baseline_epe":  8.338608741760254,
+                         "ours_epe":  2.6499361991882324,
+                         "delta_epe":  5.6886725425720215,
+                         "relative_improvement":  0.6822088334811547,
+                         "valid_pixels":  82076
+                     },
+                     {
+                         "frame_id":  "000068",
+                         "baseline_epe":  10.351924896240234,
+                         "ours_epe":  6.7712602615356445,
+                         "delta_epe":  3.58066463470459,
+                         "relative_improvement":  0.3458936063190594,
+                         "valid_pixels":  66721
+                     }
+                 ],
+    "figure_metrics":  {
+                           "000094":  {
+                                          "baseline_epe":  14.986518859863281,
+                                          "smurf_epe":  16.99117660522461,
+                                          "ours_epe":  8.621027946472168,
+                                          "delta_epe_baseline_to_ours":  6.365490913391113,
+                                          "delta_epe_smurf_to_ours":  8.370148658752441,
+                                          "valid_pixels":  114926
+                                      },
+                           "000148":  {
+                                          "baseline_epe":  8.33911418914795,
+                                          "smurf_epe":  7.3461222648620605,
+                                          "ours_epe":  2.6503005027770996,
+                                          "delta_epe_baseline_to_ours":  5.68881368637085,
+                                          "delta_epe_smurf_to_ours":  4.695821762084961,
+                                          "valid_pixels":  82076
+                                      },
+                           "000068":  {
+                                          "baseline_epe":  10.355722427368164,
+                                          "smurf_epe":  11.092758178710938,
+                                          "ours_epe":  6.768970966339111,
+                                          "delta_epe_baseline_to_ours":  3.5867514610290527,
+                                          "delta_epe_smurf_to_ours":  4.323787212371826,
+                                          "valid_pixels":  66721
+                                      }
+                       },
+    "baseline_checkpoint":  "checkpoints/sun_raft_sintel_baseline.pth",
+    "ours_checkpoint":  "checkpoints/depth_raft_g_z_dab_step35000_best.pth",
+    "smurf_checkpoint":  "external_smurf_sintel_checkpoint",
+    "outputs":  {
+                    "pdf":  "figures/figure4_kitti_qualitative_v2.pdf",
+                    "png":  "figures/figure4_kitti_qualitative_v2.png"
+                }
+}
+

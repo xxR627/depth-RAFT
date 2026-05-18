@@ -1,0 +1,6 @@
+beta,sintel_clean_epe,status,notes
+0.1,,not_run,Optional low-weight setting; not run because 0.3/0.5/1.0 already bracket the stable region and 2.0 exposed instability.
+0.3,1.5732,completed,Stable but worse than beta=0.5.
+0.5,1.5426,completed,Best among completed stable settings.
+1.0,1.5787,completed,Stable but over-regularized relative to beta=0.5.
+2.0,,unstable,Training became unstable/crashed.
