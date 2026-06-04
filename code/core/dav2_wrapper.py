@@ -145,15 +145,19 @@ class DAv2FeatureExtractor(nn.Module):
         depth_anything_repo_root: Optional[PathLike] = None,
         precision: PrecisionMode = "auto",
         device: Optional[Union[str, torch.device]] = None,
+        input_scale: float = 1.0,
     ) -> None:
         super().__init__()
 
         if encoder not in MODEL_CONFIGS:
             raise ValueError(f"Unsupported encoder {encoder!r}. Expected one of {tuple(MODEL_CONFIGS)}.")
+        if input_scale <= 0:
+            raise ValueError(f"input_scale must be positive, got {input_scale}.")
 
         self.weights_path = str(_resolve_weights_path(weights_path))
         self.encoder = encoder
         self.precision = precision
+        self.input_scale = float(input_scale)
         self.depth_anything_repo_root = str(
             _resolve_depth_anything_repo_root(depth_anything_repo_root)
         )
@@ -265,6 +269,27 @@ class DAv2FeatureExtractor(nn.Module):
 
         return image, height, width
 
+    def _resize_input_if_needed(self, image: Tensor) -> tuple[Tensor, int, int]:
+        original_height, original_width = image.shape[-2:]
+        if self.input_scale == 1.0:
+            return image, original_height, original_width
+
+        scaled_height = max(1, int(round(original_height * self.input_scale)))
+        scaled_width = max(1, int(round(original_width * self.input_scale)))
+        scaled = F.interpolate(
+            image.float(),
+            size=(scaled_height, scaled_width),
+            mode="bilinear",
+            align_corners=False,
+        )
+        return scaled, original_height, original_width
+
+    @staticmethod
+    def _restore_resolution(feature: Tensor, height: int, width: int) -> Tensor:
+        if feature.shape[-2:] == (height, width):
+            return feature
+        return F.interpolate(feature, size=(height, width), mode="bilinear", align_corners=False)
+
     def _pool_scales(self, g: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         g_1_16 = F.avg_pool2d(g, kernel_size=16, stride=16)
         g_1_8 = F.avg_pool2d(g, kernel_size=8, stride=8)
@@ -273,7 +298,8 @@ class DAv2FeatureExtractor(nn.Module):
 
     def _extract_g_valid(self, image: Tensor) -> Tensor:
         self._ensure_runtime(image.device)
-        normalized_padded, height, width = self._normalize_and_pad(image)
+        dav2_image, original_height, original_width = self._resize_input_if_needed(image)
+        normalized_padded, height, width = self._normalize_and_pad(dav2_image)
         self._g_holder.clear()
 
         with torch.no_grad(), self._autocast_context(self.runtime_device):
@@ -285,11 +311,13 @@ class DAv2FeatureExtractor(nn.Module):
                 "Failed to capture DAv2 G from depth_head.scratch.output_conv2. Hook did not fire."
             )
 
-        return g[..., :height, :width].contiguous().float()
+        g = g[..., :height, :width].contiguous().float()
+        return self._restore_resolution(g, original_height, original_width)
 
     def _extract_depth_valid(self, image: Tensor) -> Tensor:
         self._ensure_runtime(image.device)
-        normalized_padded, height, width = self._normalize_and_pad(image)
+        dav2_image, original_height, original_width = self._resize_input_if_needed(image)
+        normalized_padded, height, width = self._normalize_and_pad(dav2_image)
 
         with torch.no_grad(), self._autocast_context(self.runtime_device):
             depth = self._dav2(normalized_padded)
@@ -297,7 +325,8 @@ class DAv2FeatureExtractor(nn.Module):
         if depth.ndim != 3:
             raise RuntimeError(f"Expected DAv2 depth output with shape [B, H, W], got {tuple(depth.shape)}.")
 
-        return depth[:, None, :height, :width].contiguous().float()
+        depth = depth[:, None, :height, :width].contiguous().float()
+        return self._restore_resolution(depth, original_height, original_width)
 
     def train(self, mode: bool = True) -> "DAv2FeatureExtractor":
         del mode
@@ -315,7 +344,8 @@ class DAv2FeatureExtractor(nn.Module):
     def extra_repr(self) -> str:
         return (
             f"encoder={self.encoder!r}, precision={self.precision!r}, "
-            f"actual_precision={self.actual_precision!r}, patch_size={self.patch_size}"
+            f"actual_precision={self.actual_precision!r}, patch_size={self.patch_size}, "
+            f"input_scale={self.input_scale}"
         )
 
     def extract_raw_g(self, image: Tensor) -> Tensor:

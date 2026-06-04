@@ -55,7 +55,14 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def _build_model(device: torch.device, baseline_checkpoint: Path, fusion_checkpoint: Path, dav2_weights: Path) -> RAFT:
+def _build_model(
+    device: torch.device,
+    baseline_checkpoint: Path,
+    fusion_checkpoint: Path,
+    dav2_weights: Path,
+    *,
+    dav2_input_scale: float = 1.0,
+) -> RAFT:
     config = {
         "mixed_precision": True,
         "fnet_norm": "instance",
@@ -68,6 +75,7 @@ def _build_model(device: torch.device, baseline_checkpoint: Path, fusion_checkpo
         use_depth_raft=True,
         dav2_weights_path=str(dav2_weights),
         use_gru_checkpointing=True,
+        dav2_input_scale=dav2_input_scale,
     ).to(device)
 
     state_dict = torch.load(str(baseline_checkpoint), map_location="cpu", weights_only=False)

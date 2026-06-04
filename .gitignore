@@ -27,13 +27,7 @@ checkpoints/
 *.bib
 
 code/chairs_split.txt
-code/tests/
 code/scripts/train_*.py
-code/scripts/benchmark_*.py
-code/scripts/make_*.py
-code/scripts/find_*.py
-code/scripts/paper_figure_*.py
-code/scripts/eval_depth_raft_checkpoint_series.py
 
 data/
 datasets/

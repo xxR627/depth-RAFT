@@ -70,6 +70,7 @@ class RAFT(nn.Module):
         use_depth_raft: bool = False,
         dav2_weights_path: Optional[str] = None,
         use_gru_checkpointing: bool = True,
+        dav2_input_scale: float = 1.0,
     ):
         super(RAFT, self).__init__()
         self.args = args
@@ -107,6 +108,7 @@ class RAFT(nn.Module):
                 weights_path=dav2_weights_path,
                 encoder="vits",
                 device="cpu",
+                input_scale=dav2_input_scale,
             )
             self.dav2_fusion = DAv2FNetFusion(self.fnet_channels_per_scale)
         else:

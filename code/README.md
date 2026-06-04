@@ -8,6 +8,7 @@ Included:
 - `DAB-Smooth` implementation
 - evaluation scripts
 - submission export script
+- figure-generation and analysis utilities
 - configuration files
 
 Not included in this public snapshot:
@@ -15,7 +16,7 @@ Not included in this public snapshot:
 - the full training pipeline
 - pretrained checkpoints
 - training logs and intermediate artifacts
-- figure-generation and manuscript-support utilities
+- generated figures, result tables, and manuscript files
 
 Public naming:
 
@@ -31,6 +32,10 @@ Available scripts:
 - `scripts/eval_paper_kitti_occ_noc.py`
 - `scripts/eval_sun_raft_region_decomp.py`
 - `scripts/create_sintel_test_submission_depth_raft.py`
+- `scripts/benchmark_model_costs.py`
+- `scripts/make_figure3_sintel_qualitative_v2.py`
+- `scripts/make_figure4_kitti_qualitative.py`
+- `scripts/make_z_gradient_figure.py`
 
 Key implementation files:
 

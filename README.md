@@ -4,7 +4,7 @@ This repository currently releases only the method-specific components needed to
 
 - the `DGE` module
 - the `DAB-Smooth` loss
-- evaluation and submission scripts
+- evaluation, submission, figure-generation, and analysis scripts
 - configuration files
 
 Public method naming:
@@ -18,11 +18,12 @@ Public method naming:
 | Path | Contents |
 | --- | --- |
 | `code/core/` | Depth-RAFT implementation, including DGE integration and DAB-Smooth loss. |
-| `code/scripts/` | Evaluation scripts and Sintel submission export script. |
+| `code/scripts/` | Evaluation, submission, figure-generation, and analysis utilities. |
 | `code/config/` | Configuration files and config loader. |
+| `code/tests/` | Lightweight implementation checks. |
 | `third_party/Depth-Anything-V2/` | Vendored DAv2 runtime code used by the wrapper. |
 
-This public snapshot does not include the full training pipeline, training assets, experimental logs, paper figures, result tables, or pretrained checkpoints.
+This public snapshot does not include the full training pipeline, training assets, experimental logs, generated paper figures, result tables, or pretrained checkpoints.
 
 ## Release Note
 
@@ -44,6 +45,10 @@ Representative public entry points:
 - `code/scripts/eval_paper_kitti_occ_noc.py`
 - `code/scripts/eval_sun_raft_region_decomp.py`
 - `code/scripts/create_sintel_test_submission_depth_raft.py`
+- `code/scripts/benchmark_model_costs.py`
+- `code/scripts/make_figure3_sintel_qualitative_v2.py`
+- `code/scripts/make_figure4_kitti_qualitative.py`
+- `code/scripts/make_z_gradient_figure.py`
 
 Core implementation files:
 

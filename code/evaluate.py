@@ -144,6 +144,7 @@ def validate_sintel(model, model_path, iters=12):
     logger = logging.getLogger('eval.sintel')
     logger_for_eval_all = logging.getLogger('eval_all.sintel')
     model.eval()
+    device = next(model.parameters()).device
     results = {}
     coarsest_scale = 8
     
@@ -152,8 +153,12 @@ def validate_sintel(model, model_path, iters=12):
     for dstype in ['clean', 'final']:
 
         val_dataset = datasets_un.MpiSintel(split='training', dstype=dstype, show_extra_info = True, read_flow_gt=True)
-        epe_list = []
-        efel_list = []
+        total_pixels = 0
+        sum_epe = 0.0
+        count_lt_1 = 0
+        count_lt_3 = 0
+        count_lt_5 = 0
+        sum_efel = 0.0
         flow_prev, sequence_prev = None, None
         sequences = []
 
@@ -170,23 +175,26 @@ def validate_sintel(model, model_path, iters=12):
                 epe_sequence[f"{sequence}_count"] = 0
 
             padder = InputPadder(image1.shape, coarsest_scale=coarsest_scale)
-            image1, image2 = padder.pad(image1[None].cuda(), image2[None].cuda())
+            image1, image2 = padder.pad(image1[None].to(device), image2[None].to(device))
 
             if sequence != sequence_prev:
                 flow_prev = None
            
             flow_low, flow_pr = model(image1, image2, iters=iters, flow_init=flow_prev, test_mode=True)
             flow = padder.unpad(flow_pr[0]).cpu()
-            flow_prev = forward_interpolate(flow_low[0])[None].cuda()
+            flow_prev = forward_interpolate(flow_low[0])[None].to(device)
         
             epe = torch.sum((flow - flow_gt)**2, dim=0).sqrt()
-            epe_list.append(epe.view(-1).numpy())
-
             mag = torch.sum(flow_gt**2, dim=0).sqrt()
             epe = epe.view(-1)
             mag = mag.view(-1)
             efel = ((epe > 3.0) & ((epe/mag) > 0.05)).float()
-            efel_list.append(efel.cpu().numpy())
+            total_pixels += int(epe.numel())
+            sum_epe += float(epe.sum().item())
+            count_lt_1 += int((epe < 1).sum().item())
+            count_lt_3 += int((epe < 3).sum().item())
+            count_lt_5 += int((epe < 5).sum().item())
+            sum_efel += float(efel.sum().item())
 
             sequence_prev = sequence
 
@@ -198,16 +206,14 @@ def validate_sintel(model, model_path, iters=12):
             epe_per_seq = epe_sequence[f"{seq}_epe"]/epe_sequence[f"{seq}_count"]
             logger.info("Sintel validation, iters: %d, type: %s  seq:(%s)  EPE: %f" % (iters, dstype, seq, epe_per_seq)) 
                 
-        efel_list = np.concatenate(efel_list)
-        FL = 100 * np.mean(efel_list)
-        epe_all = np.concatenate(epe_list)
-        epe = np.mean(epe_all)
-        px1 = np.mean(epe_all<1)
-        px3 = np.mean(epe_all<3)
-        px5 = np.mean(epe_all<5)
+        FL = 100 * (sum_efel / max(total_pixels, 1))
+        epe = sum_epe / max(total_pixels, 1)
+        px1 = count_lt_1 / max(total_pixels, 1)
+        px3 = count_lt_3 / max(total_pixels, 1)
+        px5 = count_lt_5 / max(total_pixels, 1)
         logger.info("Sintel validation iters:%d (%s) EPE: %f, 1px: %f, 3px: %f, 5px: %f, FL-Error: %f:" % (iters, dstype, epe, px1, px3, px5, FL))
         logger_for_eval_all.info("Sintel iters:%d validation of the model: %s , (%s) EPE: %f , FL-Error: %f:" % (iters, model_path, dstype, epe, FL))
-        results[dstype] = np.mean(epe_list)
+        results[dstype] = epe
 
     return results
 
@@ -327,12 +333,10 @@ if __name__ == '__main__':
                 out_path = osp.join(os.path.dirname(config["model"]), f'sintel_test_iters{(config["iters"])}_mixed{config["mixed_precision"]}')
                 create_sintel_submission(model, iters= config["iters"], output_path=out_path)
 
-       
+
         elif config["dataset"] == 'kitti':
             validate_kitti(model.module, iters=config["iters"])
 
-       
+
         elif config["dataset"] == "kitti_test":
             create_kitti_submission(model, output_path=osp.join(os.path.dirname(config["model"]), 'kitti_test', 'flow'), iters=config["iters"])
-
-       

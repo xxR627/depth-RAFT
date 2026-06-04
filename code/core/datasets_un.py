@@ -212,6 +212,16 @@ class KITTI_mv(FlowDataset):
 
 
 
+def _seed_worker(worker_id):
+    worker_info = torch.utils.data.get_worker_info()
+    if worker_info is None:
+        return
+    base_seed = worker_info.seed % (2**32)
+    np.random.seed(base_seed)
+    random.seed(base_seed)
+    torch.manual_seed(base_seed)
+
+
 def fetch_dataloader(args, phase, TRAIN_DS='C+T+K+S+H'):
     """ Create the data loader for the corresponding trainign set """
 
@@ -248,8 +258,22 @@ def fetch_dataloader(args, phase, TRAIN_DS='C+T+K+S+H'):
         ds = args["train"]["dataset"][phase]
         raise ValueError(f"unsupported dataset type {ds}")
 
-    train_loader = data.DataLoader(train_dataset, batch_size=args["train"]["batch_size"][phase], 
-        pin_memory=False, shuffle=True, num_workers=4, drop_last=True, collate_fn=default_collate)
+    generator = None
+    if "seed" in args and args["seed"] is not None:
+        generator = torch.Generator()
+        generator.manual_seed(int(args["seed"]))
+
+    train_loader = data.DataLoader(
+        train_dataset,
+        batch_size=args["train"]["batch_size"][phase],
+        pin_memory=False,
+        shuffle=True,
+        num_workers=4,
+        drop_last=True,
+        collate_fn=default_collate,
+        worker_init_fn=_seed_worker,
+        generator=generator,
+    )
 
     logger = logging.getLogger("raft.train")
     logger.info('Training with %d image pairs' % len(train_dataset))

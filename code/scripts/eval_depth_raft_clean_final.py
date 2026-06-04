@@ -46,6 +46,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--trainable-checkpoint", type=Path, required=True)
     parser.add_argument("--dav2-weights", type=Path, default=DEFAULT_DAV2_WEIGHTS)
     parser.add_argument("--sintel-root", type=Path, default=DEFAULT_SINTEL_ROOT)
+    parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu")
+    parser.add_argument("--dav2-input-scale", type=float, default=1.0)
+    parser.add_argument("--sintel-passes", nargs="+", choices=("clean", "final"), default=["clean", "final"])
     parser.add_argument("--output-json", type=Path, required=True)
     return parser.parse_args()
 
@@ -62,11 +65,50 @@ def _to_builtin(obj: Any) -> Any:
     return str(obj)
 
 
-def _evaluate_clean_final(model) -> dict[str, float]:
+def _evaluate_clean_final(model, passes: list[str]) -> dict[str, float]:
     model.eval()
+    device = next(model.parameters()).device
+    clean_final: dict[str, float] = {}
+
     with torch.no_grad():
-        results = evaluate.validate_sintel(model, "depth_raft_g_z_dab_clean_final_eval", iters=12)
-    return {"clean_epe": float(results["clean"]), "final_epe": float(results["final"])}
+        for dstype in passes:
+            val_dataset = datasets_un.MpiSintel(
+                split="training",
+                dstype=dstype,
+                show_extra_info=True,
+                read_flow_gt=True,
+            )
+            total_pixels = 0
+            sum_epe = 0.0
+            flow_prev, sequence_prev = None, None
+
+            for val_id in evaluate.tqdm(range(len(val_dataset))):
+                image1, image2, flow_gt, _, (sequence, _frame) = val_dataset[val_id]
+                padder = evaluate.InputPadder(image1.shape, coarsest_scale=8)
+                image1, image2 = padder.pad(image1[None].to(device), image2[None].to(device))
+
+                if sequence != sequence_prev:
+                    flow_prev = None
+
+                flow_low, flow_pr = model(image1, image2, iters=12, flow_init=flow_prev, test_mode=True)
+                flow = padder.unpad(flow_pr[0]).cpu()
+                flow_prev = evaluate.forward_interpolate(flow_low[0])[None].to(device)
+
+                epe = torch.sum((flow - flow_gt) ** 2, dim=0).sqrt().view(-1)
+                total_pixels += int(epe.numel())
+                sum_epe += float(epe.sum().item())
+                sequence_prev = sequence
+
+            clean_final[f"{dstype}_epe"] = sum_epe / max(total_pixels, 1)
+
+    return clean_final
+
+
+def _resolve_device(device_arg: str) -> torch.device:
+    device = torch.device(device_arg)
+    if device.type == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA requested but unavailable.")
+    return device
 
 
 def main() -> int:
@@ -85,22 +127,26 @@ def main() -> int:
 
     try:
         model = fusion_region_eval._build_model(
-            device=baseline_eval._resolve_device(),
+            device=_resolve_device(args.device),
             baseline_checkpoint=args.baseline_checkpoint,
             fusion_checkpoint=args.trainable_checkpoint,
             dav2_weights=args.dav2_weights,
+            dav2_input_scale=args.dav2_input_scale,
         )
-        clean_final = _evaluate_clean_final(model)
+        clean_final = _evaluate_clean_final(model, args.sintel_passes)
     finally:
         datasets_un.get_extention = original_datasets_get_extention
         evaluate.datasets_un.get_extention = original_evaluate_get_extention
 
     payload = {
         "checkpoint": str(args.trainable_checkpoint),
+        "dav2_input_scale": args.dav2_input_scale,
+        "sintel_passes": args.sintel_passes,
         "clean_final": clean_final,
         "delta_vs_baseline": {
-            "clean_epe": clean_final["clean_epe"] - DEFAULT_BASELINE_FINAL["clean_epe"],
-            "final_epe": clean_final["final_epe"] - DEFAULT_BASELINE_FINAL["final_epe"],
+            key: value - DEFAULT_BASELINE_FINAL[key]
+            for key, value in clean_final.items()
+            if key in DEFAULT_BASELINE_FINAL
         },
     }
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
