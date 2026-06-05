@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
+import os
 import sys
 
 import numpy as np
 from PIL import Image
+import pytest
 import torch
 
 
@@ -18,17 +20,27 @@ from utils.utils import InputPadder
 
 
 PACKAGE_ROOT = REPO_ROOT.parent
-DEFAULT_BASELINE_CKPT = PACKAGE_ROOT / "checkpoints" / "sun_raft_sintel_baseline.pth"
-DEFAULT_DAV2_WEIGHTS = PACKAGE_ROOT / "checkpoints" / "depth_anything_v2_vits_frozen.pth"
+DEFAULT_BASELINE_CKPT = Path(
+    os.environ.get(
+        "DEPTH_RAFT_BASELINE_CKPT",
+        PACKAGE_ROOT / "checkpoints" / "sun_raft_sintel_baseline.pth",
+    )
+)
+DEFAULT_DAV2_WEIGHTS = Path(
+    os.environ.get(
+        "DEPTH_RAFT_DAV2_WEIGHTS",
+        PACKAGE_ROOT / "checkpoints" / "depth_anything_v2_vits_frozen.pth",
+    )
+)
 DEFAULT_SINTEL_PAIR = (
-    Path(r"G:\flow_data\sintel\training\clean\alley_1\frame_0001.png"),
-    Path(r"G:\flow_data\sintel\training\clean\alley_1\frame_0002.png"),
+    Path(os.environ.get("DEPTH_RAFT_SINTEL_IMAGE1", "")),
+    Path(os.environ.get("DEPTH_RAFT_SINTEL_IMAGE2", "")),
 )
 
 
 def _resolve_device() -> torch.device:
     if not torch.cuda.is_available():
-        raise RuntimeError("CUDA is required for this equivalence test.")
+        pytest.skip("CUDA is required for the optional checkpoint equivalence test.")
     return torch.device("cuda")
 
 
@@ -77,12 +89,24 @@ def _build_depth_model(device: torch.device) -> RAFT:
 
 
 def test_depth_raft_zero_init_equivalence() -> None:
-    device = _resolve_device()
+    if not DEFAULT_BASELINE_CKPT.is_file():
+        pytest.skip(
+            "Optional baseline checkpoint not found. Set DEPTH_RAFT_BASELINE_CKPT "
+            "to run this full equivalence test."
+        )
+    if not DEFAULT_DAV2_WEIGHTS.is_file():
+        pytest.skip(
+            "Optional DAv2 weights not found. Set DEPTH_RAFT_DAV2_WEIGHTS "
+            "to run this full equivalence test."
+        )
     image1_path, image2_path = DEFAULT_SINTEL_PAIR
     if not image1_path.is_file() or not image2_path.is_file():
-        raise FileNotFoundError(f"Sintel pair not found: {image1_path}, {image2_path}")
-    if not DEFAULT_DAV2_WEIGHTS.is_file():
-        raise FileNotFoundError(f"DAv2 weights not found: {DEFAULT_DAV2_WEIGHTS}")
+        pytest.skip(
+            "Optional Sintel image pair not found. Set DEPTH_RAFT_SINTEL_IMAGE1 "
+            "and DEPTH_RAFT_SINTEL_IMAGE2 to run this full equivalence test."
+        )
+
+    device = _resolve_device()
 
     baseline = _build_baseline_model(device)
     depth_model = _build_depth_model(device)

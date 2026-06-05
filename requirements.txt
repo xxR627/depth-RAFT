@@ -12,3 +12,4 @@ tqdm
 parse
 timm
 flowpy
+pytest

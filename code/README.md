@@ -46,3 +46,13 @@ Key implementation files:
 - `core/losses/`: original Sun-RAFT losses plus DAB-Smooth
 
 DAv2 runtime code is vendored at `../third_party/Depth-Anything-V2/`; `DEPTH_ANYTHING_V2_ROOT` can override that path.
+
+Quick implementation check:
+
+Recommended environment: Python 3.9 or 3.10 with PyTorch installed from the matching CUDA or CPU wheel for your machine.
+
+```bash
+python -m pytest code/tests -q
+```
+
+The public smoke tests do not require datasets or checkpoints. The optional checkpoint equivalence test is skipped unless CUDA and the `DEPTH_RAFT_BASELINE_CKPT`, `DEPTH_RAFT_DAV2_WEIGHTS`, `DEPTH_RAFT_SINTEL_IMAGE1`, and `DEPTH_RAFT_SINTEL_IMAGE2` paths are provided.
