@@ -1,4 +1,4 @@
-# depth-RAFT Code
+# Depth-RAFT Code
 
 This public code folder is intentionally limited to the method components needed for inspection and evaluation.
 
@@ -24,8 +24,17 @@ Public naming:
 - `Z`: frozen DAv2 depth map injected into the context encoder input
 - `DAB`: depth-aware boundary smoothness
 
+## Paper-to-Code Map
+
+| Paper component | Files | Minimal check |
+| --- | --- | --- |
+| DGE-G feature-side depth prior | `core/dav2_bottneck.py`, `core/raft.py` | `python code/scripts/demo_depth_raft_components.py` prints the identity-initialization error. |
+| DGE-Z context-side depth prior | `core/extractor.py`, `core/raft.py` | The same demo prints the zero-initialized depth-path weight. |
+| DAB-Smooth loss-side depth prior | `core/losses/loss_blocks.py`, `core/losses/flow_loss.py` | The same demo prints RGB-only and DAB-Smooth losses on synthetic tensors. |
+
 Available scripts:
 
+- `scripts/demo_depth_raft_components.py`
 - `scripts/eval_depth_raft_clean_final.py`
 - `scripts/eval_depth_raft_region_decomp.py`
 - `scripts/eval_paper_sintel_occ_noc.py`
@@ -55,4 +64,10 @@ Recommended environment: Python 3.9 or 3.10 with PyTorch installed from the matc
 python -m pytest code/tests -q
 ```
 
-The public smoke tests do not require datasets or checkpoints. The optional checkpoint equivalence test is skipped unless CUDA and the `DEPTH_RAFT_BASELINE_CKPT`, `DEPTH_RAFT_DAV2_WEIGHTS`, `DEPTH_RAFT_SINTEL_IMAGE1`, and `DEPTH_RAFT_SINTEL_IMAGE2` paths are provided.
+Expected result in the public review snapshot:
+
+```text
+4 passed, 1 skipped
+```
+
+The public smoke tests and demo do not require datasets or checkpoints. The optional checkpoint equivalence test is skipped unless CUDA and the `DEPTH_RAFT_BASELINE_CKPT`, `DEPTH_RAFT_DAV2_WEIGHTS`, `DEPTH_RAFT_SINTEL_IMAGE1`, and `DEPTH_RAFT_SINTEL_IMAGE2` paths are provided.

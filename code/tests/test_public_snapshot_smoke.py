@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import subprocess
 import sys
 
 import pytest
@@ -58,3 +59,15 @@ def test_vendored_dav2_runtime_present() -> None:
 
     root = _default_depth_anything_repo_root()
     assert (root / "depth_anything_v2" / "dpt.py").is_file()
+
+
+def test_component_demo_script_runs() -> None:
+    script = REPO_ROOT / "scripts" / "demo_depth_raft_components.py"
+    result = subprocess.run(
+        [sys.executable, str(script)],
+        cwd=str(REPO_ROOT.parent),
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    assert "Demo passed." in result.stdout

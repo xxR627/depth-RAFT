@@ -1,13 +1,25 @@
 # Depth-RAFT
 
-This repository currently releases only the method-specific components needed to inspect the proposed approach:
+Depth-RAFT is a geometry-aware extension of Sun-RAFT for unsupervised optical flow. The central idea is to use frozen monocular depth from Depth Anything V2 (DAv2) as an external geometric prior when photometric supervision is unreliable, especially around unmatched or occluded pixels.
+
+This public review snapshot releases the method-specific components needed to inspect and run the proposed contribution:
 
 - the `DGE` module
 - the `DAB-Smooth` loss
 - evaluation, submission, figure-generation, and analysis scripts
 - configuration files
 
-Public method naming:
+## What This Repository Demonstrates
+
+The manuscript's main technical claim is implemented in three places:
+
+| Paper component | What it does | Code evidence |
+| --- | --- | --- |
+| DGE-G | Injects frozen DAv2 high-level geometric features into the RAFT matching feature stream before correlation construction. The fusion projector is identity-initialized so the public code can verify that the added branch does not disturb the baseline at initialization. | `code/core/dav2_bottneck.py`, `code/core/raft.py` |
+| DGE-Z | Injects the frozen DAv2 depth map into the context encoder through a separate zero-initialized depth convolution, preserving the RGB checkpoint path while adding geometric context for recurrent refinement. | `code/core/extractor.py`, `code/core/raft.py` |
+| DAB-Smooth | Replaces RGB-only edge-aware smoothness with a depth-aware boundary smoothness loss that combines RGB gradients and normalized depth gradients. | `code/core/losses/loss_blocks.py`, `code/core/losses/flow_loss.py` |
+
+Public method naming used in the paper and code:
 
 - `G`: frozen DAv2 high-level features injected into the matching feature stream
 - `Z`: frozen DAv2 depth map injected into the context encoder input
@@ -52,7 +64,31 @@ pip install -r requirements.txt
 python -m pytest code/tests -q
 ```
 
-The lightweight smoke tests check the DGE identity initialization, DAB-Smooth loss, and vendored DAv2 runtime path without requiring datasets or pretrained checkpoints.
+Expected result:
+
+```text
+4 passed, 1 skipped
+```
+
+The lightweight smoke tests check the DGE-G identity initialization, DGE-Z zero initialization, DAB-Smooth loss, the vendored DAv2 runtime path, and the public component demo without requiring datasets or pretrained checkpoints.
+
+To see the components directly, run:
+
+```bash
+python code/scripts/demo_depth_raft_components.py
+```
+
+Expected output contains:
+
+```text
+Depth-RAFT public component demo
+- Vendored DAv2 runtime present: True
+- DGE-G identity initialization max error: ...
+- DGE-Z zero-initialized depth path max weight: 0.000e+00
+- RGB-only smoothness loss: ...
+- DAB-Smooth loss with RGB+depth boundaries: ...
+Demo passed.
+```
 
 One optional equivalence test additionally verifies that the zero-initialized Depth-RAFT path matches the Sun-RAFT baseline on a real Sintel image pair. This optional test is skipped unless CUDA, checkpoints, and image paths are available. To run it, set:
 
@@ -68,6 +104,7 @@ python -m pytest code/tests/test_depth_raft_identity_equivalence.py -q
 
 Representative public entry points:
 
+- `code/scripts/demo_depth_raft_components.py`
 - `code/scripts/eval_depth_raft_clean_final.py`
 - `code/scripts/eval_depth_raft_region_decomp.py`
 - `code/scripts/eval_paper_sintel_occ_noc.py`
@@ -87,3 +124,16 @@ Core implementation files:
 - `code/core/extractor.py`
 - `code/core/losses/loss_blocks.py`
 - `code/core/losses/flow_loss.py`
+
+## Reported Results in the Manuscript
+
+This public snapshot is intended to make the method inspectable during review. The manuscript reports the full experimental results, including:
+
+| Setting | Sun-RAFT | Depth-RAFT |
+| --- | ---: | ---: |
+| Sintel Clean EPE | 1.69 | 1.50 |
+| Sintel Clean unmatched-region EPE | 12.74 | 11.54 |
+| Sintel Final EPE | 2.60 | 2.47 |
+| Zero-shot KITTI 2015 EPE | 4.76 | 3.99 |
+
+The full checkpoints, training assets, and complete reproduction pipeline will be released after acceptance as described above.
